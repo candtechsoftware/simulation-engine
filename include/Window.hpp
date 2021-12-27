@@ -1,5 +1,6 @@
 #pragma once
 
+#include <vulkan/vulkan_core.h>
 #define GLFW_INCLUDE_VULKAN
 #include <GLFW/glfw3.h>
 
@@ -7,21 +8,22 @@
 
 namespace Simulation {
 class Window {
-  public:
-  Window(int width, int height, const std::string &name);
-  ~Window();
-  Window(const Window &) = delete;
-  Window &operator=(const Window &) = delete;
+public:
+    Window(int width, int height, const std::string& name);
+    ~Window();
+    Window(const Window&) = delete;
+    Window& operator=(const Window&) = delete;
 
-  bool shouldClose() { return glfwWindowShouldClose(window); }
+    bool shouldClose() { return glfwWindowShouldClose(window); }
 
-  private:
-  void initWindow();
+    void create_window_surface(VkInstance instance, VkSurfaceKHR* surface);
 
-  GLFWwindow *window;
-  const int m_width;
-  const int m_height;
-  std::string m_name;
+private:
+    void initWindow();
+
+    GLFWwindow* window;
+    const int m_width;
+    const int m_height;
+    std::string m_name;
 };
-}  // namespace Simulation
-
+} // namespace Simulation
