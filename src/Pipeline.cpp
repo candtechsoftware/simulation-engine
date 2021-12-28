@@ -27,8 +27,7 @@ std::vector<char> Pipeline::read_file(const std::string& filepath)
     return buffer;
 }
 
-void Pipeline::create_graphics_pipeline(
-    const std::string& vertex_filepath, const std::string& frag_filepath)
+void Pipeline::create_graphics_pipeline(const std::string& vertex_filepath, const std::string& frag_filepath)
 {
     auto v_code = read_file(vertex_filepath);
     auto f_code = read_file(frag_filepath);

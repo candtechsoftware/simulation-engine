@@ -13,7 +13,6 @@ public:
 
 private:
     Window m_window { WIDTH, HEIGHT, "Hello Vulkan" };
-    Pipeline m_pipeline { "../shaders/simple_shader.vert.spv",
-        "../shaders/simple_shader.frag.spv" };
+    Pipeline m_pipeline { "../shaders/simple_shader.vert.spv", "../shaders/simple_shader.frag.spv" };
 };
 } // namespace Simulation

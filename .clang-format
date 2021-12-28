@@ -11,4 +11,4 @@ BreakBeforeBraces: Custom
 BraceWrapping:
     AfterFunction: true
 NamespaceIndentation: None
-ColumnLimit: 100
+ColumnLimit: 120

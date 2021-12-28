@@ -11,7 +11,6 @@ public:
 private:
     static std::vector<char> read_file(const std::string& filepath);
 
-    void create_graphics_pipeline(
-        const std::string& vertex_filepath, const std::string& frag_filepath);
+    void create_graphics_pipeline(const std::string& vertex_filepath, const std::string& frag_filepath);
 };
 } // namespace Simulation

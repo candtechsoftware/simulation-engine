@@ -45,27 +45,20 @@ public:
     VkQueue graphics_queue() { return m_graphics_queue; }
     VkQueue present_queue() { return m_present_queue; }
 
-    SwapChainSupportDetails get_swap_chain_support()
-    {
-        return query_swap_chain_support(m_physical_device);
-    }
+    SwapChainSupportDetails get_swap_chain_support() { return query_swap_chain_support(m_physical_device); }
     uint32_t find_memory_type(uint32_t type_filter, VkMemoryPropertyFlags properties);
-    QueueFamilyIndicies find_physical_queue_families()
-    {
-        return find_queue_families(m_physical_device);
-    }
+    QueueFamilyIndicies find_physical_queue_families() { return find_queue_families(m_physical_device); }
     VkFormat find_support_format(
-        const std::vector<VkFormat>& candidate, VkImageTiling tiling, VkFormatFeatureFlags featues);
+        const std::vector<VkFormat>& candidates, VkImageTiling tiling, VkFormatFeatureFlags features);
 
-    void create_buffer(VkDeviceSize size, VkBufferUsageFlags usage,
-        VkMemoryPropertyFlags properties, VkBuffer& buffer, VkDeviceMemory& buffer_memory);
-    VkCommandBuffer being_single_time_commands();
+    void create_buffer(VkDeviceSize size, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties, VkBuffer& buffer,
+        VkDeviceMemory& buffer_memory);
+    VkCommandBuffer begin_single_time_commands();
     void end_single_time_commands(VkCommandBuffer command_buffer);
-    void copy_buffer(VkBuffer scr, VkBuffer dest, VkDevice size);
-    void copy_buffer_to_image(
-        VkBuffer buffer, VkImage image, uint32_t width, uint32_t height, uint32_t layer_count);
-    void create_image_with_info(const VkImageCreateInfo& image_info,
-        VkMemoryPropertyFlags properties, VkImage& image, VkDeviceMemory& image_memory);
+    void copy_buffer(VkBuffer src, VkBuffer dest, VkDeviceSize size);
+    void copy_buffer_to_image(VkBuffer buffer, VkImage image, uint32_t width, uint32_t height, uint32_t layer_count);
+    void create_image_with_info(const VkImageCreateInfo& image_info, VkMemoryPropertyFlags properties, VkImage& image,
+        VkDeviceMemory& image_memory);
     VkPhysicalDeviceProperties properties;
 
 private:
