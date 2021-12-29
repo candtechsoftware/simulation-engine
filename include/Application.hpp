@@ -13,6 +13,8 @@ public:
 
 private:
     Window m_window { WIDTH, HEIGHT, "Hello Vulkan" };
-    Pipeline m_pipeline { "../shaders/simple_shader.vert.spv", "../shaders/simple_shader.frag.spv" };
+    Device m_device { m_window };
+    Pipeline m_pipeline { m_device, "../shaders/simple_shader.vert.spv", "../shaders/simple_shader.frag.spv",
+        Pipeline::default_pipeline_config_info(WIDTH, HEIGHT) };
 };
 } // namespace Simulation

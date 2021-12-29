@@ -17,15 +17,15 @@ static VKAPI_ATTR VkBool32 VKAPI_CALL debugCallback(VkDebugUtilsMessageSeverityF
     return VK_FALSE;
 }
 
-VkResult create_debug_utils_messenger_ext(VkInstance instance, const VkDebugUtilsMessengerCreateInfoEXT* create_info,
-    const VkAllocationCallbacks* allocator, VkDebugUtilsMessengerEXT* debug_messenger)
+VkResult create_debug_utils_messenger_ext(VkInstance instance, const VkDebugUtilsMessengerCreateInfoEXT* pCreateInfo,
+    const VkAllocationCallbacks* pAllocator, VkDebugUtilsMessengerEXT* pDebugMessenger)
 {
-    auto func
-        = (PFN_vkCreateDebugUtilsMessengerEXT)vkGetInstanceProcAddr(instance, "vkDebugUtilsMessengerCreateInfoEXT");
+    auto func = (PFN_vkCreateDebugUtilsMessengerEXT)vkGetInstanceProcAddr(instance, "vkCreateDebugUtilsMessengerEXT");
     if (func != nullptr) {
-        return func(instance, create_info, allocator, debug_messenger);
+        return func(instance, pCreateInfo, pAllocator, pDebugMessenger);
+    } else {
+        return VK_ERROR_EXTENSION_NOT_PRESENT;
     }
-    return VK_ERROR_EXTENSION_NOT_PRESENT;
 }
 
 void destroy_debug_utils_messenger_ext(
@@ -113,7 +113,9 @@ void Device::pick_physcial_device()
     vkEnumeratePhysicalDevices(m_instance, &device_count, devices.data());
 
     for (const auto& device : devices) {
+        std::cout << "HERE 1 \n";
         if (is_device_suitable(device)) {
+            std::cout << "HERE 2 \n";
             m_physical_device = device;
             break;
         }
@@ -202,6 +204,7 @@ bool Device::is_device_suitable(VkPhysicalDevice device)
 
     VkPhysicalDeviceFeatures supported_featues;
     vkGetPhysicalDeviceFeatures(device, &supported_featues);
+    
 
     return indicies.is_complete() && ext_supported && swap_chain_adequate && supported_featues.samplerAnisotropy;
 }
@@ -215,7 +218,7 @@ void Device::populate_debug_messanger_create_info(VkDebugUtilsMessengerCreateInf
     create_info.messageType = VK_DEBUG_UTILS_MESSAGE_TYPE_GENERAL_BIT_EXT
         | VK_DEBUG_UTILS_MESSAGE_TYPE_VALIDATION_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_TYPE_PERFORMANCE_BIT_EXT;
     create_info.pfnUserCallback = debugCallback;
-    create_info.pUserData = nullptr;
+    create_info.pUserData = nullptr; // Optional
 }
 
 void Device::setup_debug_messenger()
