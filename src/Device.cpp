@@ -113,9 +113,7 @@ void Device::pick_physcial_device()
     vkEnumeratePhysicalDevices(m_instance, &device_count, devices.data());
 
     for (const auto& device : devices) {
-        std::cout << "HERE 1 \n";
         if (is_device_suitable(device)) {
-            std::cout << "HERE 2 \n";
             m_physical_device = device;
             break;
         }
@@ -204,7 +202,6 @@ bool Device::is_device_suitable(VkPhysicalDevice device)
 
     VkPhysicalDeviceFeatures supported_featues;
     vkGetPhysicalDeviceFeatures(device, &supported_featues);
-    
 
     return indicies.is_complete() && ext_supported && swap_chain_adequate && supported_featues.samplerAnisotropy;
 }

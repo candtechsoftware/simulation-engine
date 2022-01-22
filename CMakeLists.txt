@@ -1,6 +1,6 @@
-cmake_minimum_required(VERSION 3.8)
+cmake_minimum_required(VERSION 3.18)
 
-set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD 20)
 project(simulationengine)
 add_definitions("-Wall" "-g")
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON CACHE INTERNAL "") # creates compile_command.json
@@ -26,6 +26,7 @@ target_include_directories(simulationengine
   PUBLIC ${GLM_INCLUDE_DIRS} 
 )
 
+target_link_libraries(simulationengine rt)
 target_link_libraries(simulationengine glfw)
 target_link_libraries(simulationengine  Vulkan::Vulkan)
 
