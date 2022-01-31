@@ -1,5 +1,6 @@
 #include "Pipeline.hpp"
 
+#include <cassert>
 #include <fstream>
 #include <iostream>
 #include <stdexcept>
@@ -11,6 +12,13 @@ Pipeline::Pipeline(Device& device, const std::string& vertex_filepath, const std
     : m_device(device)
 {
     create_graphics_pipeline(vertex_filepath, frag_filepath, config_info);
+}
+
+Pipeline::~Pipeline()
+{
+    vkDestroyShaderModule(m_device.device(), m_vert_shader_module, nullptr);
+    vkDestroyShaderModule(m_device.device(), m_frag_shader_module, nullptr);
+    vkDestroyPipeline(m_device.device(), m_graphics_pipeline, nullptr);
 }
 
 std::vector<char> Pipeline::read_file(const std::string& filepath)
@@ -33,11 +41,68 @@ std::vector<char> Pipeline::read_file(const std::string& filepath)
 void Pipeline::create_graphics_pipeline(
     const std::string& vertex_filepath, const std::string& frag_filepath, const PipelineConfigInfo& config_info)
 {
+
+    assert(config_info.pipeline_layout != VK_NULL_HANDLE
+        && "Cannot create graphics pipeline no pipeline_layout provided to config_info");
+
+    assert(config_info.render_pass != VK_NULL_HANDLE
+        && "Cannot create graphics pipeline no render_pass provided to config_info");
+
     auto v_code = read_file(vertex_filepath);
     auto f_code = read_file(frag_filepath);
 
-    std::cout << "V " << v_code.size() << std::endl;
-    std::cout << "F " << f_code.size() << std::endl;
+    create_shader_module(v_code, &m_vert_shader_module);
+    create_shader_module(f_code, &m_frag_shader_module);
+
+    VkPipelineShaderStageCreateInfo shader_stages[2];
+    shader_stages[0].sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
+    shader_stages[0].stage = VK_SHADER_STAGE_VERTEX_BIT;
+    shader_stages[0].module = m_vert_shader_module;
+    shader_stages[0].pName = "main";
+    shader_stages[0].flags = 0;
+    shader_stages[0].pNext = 0;
+    shader_stages[0].pSpecializationInfo = nullptr;
+
+    shader_stages[1].sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
+    shader_stages[1].stage = VK_SHADER_STAGE_FRAGMENT_BIT;
+    shader_stages[1].module = m_frag_shader_module;
+    shader_stages[1].pName = "main";
+    shader_stages[1].flags = 0;
+    shader_stages[1].pNext = 0;
+    shader_stages[1].pSpecializationInfo = nullptr;
+
+    VkPipelineVertexInputStateCreateInfo vertex_input_info {};
+    vertex_input_info.sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
+    vertex_input_info.vertexAttributeDescriptionCount = 0;
+    vertex_input_info.vertexBindingDescriptionCount = 0;
+    vertex_input_info.pVertexAttributeDescriptions = nullptr;
+    vertex_input_info.pVertexBindingDescriptions = nullptr;
+
+    VkGraphicsPipelineCreateInfo pipeline_info {};
+    pipeline_info.sType = VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO;
+    pipeline_info.stageCount = 2;
+    pipeline_info.pStages = shader_stages;
+    pipeline_info.pVertexInputState = &vertex_input_info;
+    pipeline_info.pInputAssemblyState = &config_info.input_assembly_info;
+    pipeline_info.pViewportState = &config_info.viewport_info;
+    pipeline_info.pRasterizationState = &config_info.rasterization_info;
+    pipeline_info.pMultisampleState = &config_info.multisample_info;
+
+    pipeline_info.pColorBlendState = &config_info.color_blend_info;
+    pipeline_info.pDepthStencilState = &config_info.depth_stencil_info;
+    pipeline_info.pDynamicState = nullptr;
+
+    pipeline_info.layout = config_info.pipeline_layout;
+    pipeline_info.renderPass = config_info.render_pass;
+    pipeline_info.subpass = config_info.sub_pass;
+
+    pipeline_info.basePipelineHandle = VK_NULL_HANDLE;
+    pipeline_info.basePipelineIndex = -1;
+
+    if (vkCreateGraphicsPipelines(m_device.device(), VK_NULL_HANDLE, 1, &pipeline_info, nullptr, &m_graphics_pipeline)
+        != VK_SUCCESS) {
+        throw std::runtime_error("failed to create graphis pipeline");
+    }
 }
 
 void Pipeline::create_shader_module(const std::vector<char>& code, VkShaderModule* shader_module)
@@ -77,7 +142,7 @@ PipelineConfigInfo Pipeline::default_pipeline_config_info(uint32_t width, uint32
     config_info.viewport_info.pScissors = &config_info.scissor;
 
     config_info.rasterization_info.sType = VK_STRUCTURE_TYPE_PIPELINE_RASTERIZATION_STATE_CREATE_INFO;
-    config_info.rasterization_info.depthBiasClamp = VK_FALSE;
+    config_info.rasterization_info.depthClampEnable = VK_FALSE;
     config_info.rasterization_info.rasterizerDiscardEnable = VK_FALSE;
     config_info.rasterization_info.polygonMode = VK_POLYGON_MODE_FILL;
     config_info.rasterization_info.lineWidth = 1.0f;

@@ -28,7 +28,7 @@ public:
     Pipeline(Device& device, const std::string& vertex_filepath, const std::string& frag_filepath,
         const PipelineConfigInfo& config_info);
 
-    ~Pipeline() {};
+    ~Pipeline();
 
     Pipeline(const Pipeline&) = delete;
     void operator=(const Pipeline&) = delete;

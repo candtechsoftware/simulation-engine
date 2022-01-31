@@ -108,7 +108,7 @@ void Device::pick_physcial_device()
     if (device_count == 0) {
         throw std::runtime_error("failed to find GPUs with Vulkan support");
     }
-    std::cout << "Device count: " << device_count << std::endl;
+
     std::vector<VkPhysicalDevice> devices(device_count);
     vkEnumeratePhysicalDevices(m_instance, &device_count, devices.data());
 
@@ -274,17 +274,13 @@ void Device::has_glfw_required_ext()
     std::vector<VkExtensionProperties> extensions(ext_count);
     vkEnumerateInstanceExtensionProperties(nullptr, &ext_count, extensions.data());
 
-    std::cout << "available extensions: " << std::endl;
     std::unordered_set<std::string> available;
     for (const auto& ext : extensions) {
-        std::cout << "\t" << ext.extensionName << std::endl;
         available.insert(ext.extensionName);
     }
 
-    std::cout << "required extensions: " << std::endl;
     auto required_ext = get_required_ext();
     for (const auto& req : required_ext) {
-        std::cout << "\t" << req << std::endl;
         if (available.find(req) == available.end()) {
             throw std::runtime_error("Missing requied glfw extensions");
         }
